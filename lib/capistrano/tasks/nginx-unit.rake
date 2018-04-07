@@ -1,7 +1,9 @@
 namespace :load do
   task :defaults do
     set :nginx_unit_roles,        -> { :app }
+    set :nginx_unit_pid,          -> { "/var/run/unit.pid" }
     set :nginx_unit_control_sock, -> { "/var/run/control.unit.sock" }
+    set :nginx_unit_options,      -> { "" }
     set :nginx_unit_listen,       -> { "*:3000" }
     set :nginx_unit_app_name,     -> { fetch(:application) }
     set :nginx_unit_processes,    -> { 1 }
@@ -11,8 +13,23 @@ namespace :load do
   end
 end
 
-# TODO: Start and stop NGINX Unit process
+# TODO: Stop NGINX Unit process
 namespace :nginx_unit do
+  desc "Start NGINX Unit process"
+  task :start do
+    on release_roles(fetch(:nginx_unit_roles)) do
+      pid_file = fetch(:nginx_unit_pid)
+      if test("[ -e #{pid_file} ] && kill -0 `cat #{pid_file}`")
+        info "NGINX Unit is already started"
+      else
+        execute :sudo, :unitd, 
+                "--pid #{pid_file}", 
+                "--control unix:#{fetch(:nginx_unit_control_sock)}",
+                fetch(:nginx_unit_options)
+      end
+    end
+  end
+
   # If you want to apply new code when deployed,
   # please invoke this task after deploy:published
   desc "Set listener and application configuration for NGINX Unit"
