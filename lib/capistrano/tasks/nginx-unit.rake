@@ -34,6 +34,7 @@ namespace :nginx_unit do
   # please invoke this task after deploy:published
   desc "Set listener and application configuration for NGINX Unit"
   task :configure do
+    invoke "nginx_unit:start"
     invoke "nginx_unit:configure_app"
     invoke "nginx_unit:configure_listener"
   end
