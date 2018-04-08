@@ -28,7 +28,16 @@ cap nginx_unit:start               # Start NGINX Unit process
 cap nginx_unit:stop                # Stop NGINX Unit process
 ```
 
-Defined following customizable options.
+`nginx_unit:attach` is main task.  
+The task [sends HTTP request to configure NGINX Unit](http://unit.nginx.org/configuration/) on server.  
+If you want to apply new code when deployed, please invoke `nginx_unit:attach` task after `deploy:published`.
+
+```rb
+# deploy.rb
+after "deploy:published", "nginx_unit:attach"
+```
+
+## Options
 
 ```rb
 set :nginx_unit_roles,        -> { :app }
@@ -41,11 +50,4 @@ set :nginx_unit_processes,    -> { 1 }
 set :nginx_unit_user,         -> { nil }
 set :nginx_unit_group,        -> { nil }
 set :nginx_unit_script,       -> { "config.ru" }
-```
-
-If you want to apply new code when deployed, please invoke `nginx_unit:attach` task after `deploy:published`.
-
-```rb
-# deploy.rb
-after "deploy:published", "nginx_unit:attach"
 ```
