@@ -32,23 +32,23 @@ namespace :nginx_unit do
 
   # If you want to apply new code when deployed,
   # please invoke this task after deploy:published
-  desc "Set listener and application configuration for NGINX Unit"
-  task :configure do
+  desc "Attach listener and application configuration for NGINX Unit"
+  task :attach do
     invoke "nginx_unit:start"
-    invoke "nginx_unit:configure_app"
-    invoke "nginx_unit:configure_listener"
+    invoke "nginx_unit:attach_app"
+    invoke "nginx_unit:attach_listener"
   end
 
-  desc "Set listener configuration for NGINX Unit"
-  task :configure_listener do
+  desc "Attach listener configuration for NGINX Unit"
+  task :attach_listener do
     on release_roles(fetch(:nginx_unit_roles)) do
       listener_json = JSON.generate("application" => fetch(:application))
       control_nginx_unit(:put, path: "/listeners/#{fetch(:nginx_unit_listen)}", json: listener_json)
     end
   end
 
-  desc "Set application configuration for NGINX Unit"
-  task :configure_app do
+  desc "Attach application configuration for NGINX Unit"
+  task :attach_app do
     on release_roles(fetch(:nginx_unit_roles)) do |role|
       released_dir = capture(:readlink, "-f", current_path)
       raise "Doesn't exist released dir: #{released_dir}" unless test("[ -d #{released_dir} ]")
