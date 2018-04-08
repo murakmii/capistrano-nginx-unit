@@ -25,6 +25,7 @@ cap nginx_unit:detach              # Detach listener and application configurati
 cap nginx_unit:detach_app          # Detach application configuration from NGINX Unit
 cap nginx_unit:detach_listener     # Detach listener configuration from NGINX Unit
 cap nginx_unit:start               # Start NGINX Unit process
+cap nginx_unit:stop                # Stop NGINX Unit process
 ```
 
 Defined following customizable options.

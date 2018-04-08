@@ -13,7 +13,6 @@ namespace :load do
   end
 end
 
-# TODO: Stop NGINX Unit process
 namespace :nginx_unit do
   desc "Start NGINX Unit process"
   task :start do
@@ -26,6 +25,19 @@ namespace :nginx_unit do
                 "--pid #{pid_file}",
                 "--control unix:#{fetch(:nginx_unit_control_sock)}",
                 fetch(:nginx_unit_options)
+      end
+    end
+  end
+
+  # NOTE: Should we detach listener and application before killing?
+  desc "Stop NGINX Unit process"
+  task :stop do
+    on release_roles(fetch(:nginx_unit_roles)) do
+      pid_file = fetch(:nginx_unit_pid)
+      if test("[ -e #{pid_file} ] && kill -0 `cat #{pid_file}`")
+        execute :sudo, :kill, "-s QUIT `cat #{pid_file}`"
+      else
+        info "NGINX Unit is already stopped"
       end
     end
   end
