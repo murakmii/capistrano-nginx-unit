@@ -32,14 +32,14 @@ namespace :nginx_unit do
 
   # If you want to apply new code when deployed,
   # please invoke this task after deploy:published
-  desc "Attach listener and application configuration for NGINX Unit"
+  desc "Attach listener and application configuration to NGINX Unit"
   task :attach do
     invoke "nginx_unit:start"
     invoke "nginx_unit:attach_app"
     invoke "nginx_unit:attach_listener"
   end
 
-  desc "Attach listener configuration for NGINX Unit"
+  desc "Attach listener configuration to NGINX Unit"
   task :attach_listener do
     on release_roles(fetch(:nginx_unit_roles)) do
       listener_json = JSON.generate("application" => fetch(:application))
@@ -47,7 +47,7 @@ namespace :nginx_unit do
     end
   end
 
-  desc "Attach application configuration for NGINX Unit"
+  desc "Attach application configuration to NGINX Unit"
   task :attach_app do
     on release_roles(fetch(:nginx_unit_roles)) do |role|
       released_dir = capture(:readlink, "-f", current_path)
@@ -62,6 +62,26 @@ namespace :nginx_unit do
       })
 
       control_nginx_unit(:put, path: "/applications/#{fetch(:nginx_unit_app_name)}", json: app_json)
+    end
+  end
+
+  desc "Detach listener and application configuration from NGINX Unit"
+  task :detach do
+    invoke "nginx_unit:detach_listener"
+    invoke "nginx_unit:detach_app"
+  end
+
+  desc "Detach listener configuration from NGINX Unit"
+  task :detach_listener do
+    on release_roles(fetch(:nginx_unit_roles)) do
+      control_nginx_unit(:delete, path: "/listeners/#{fetch(:nginx_unit_listen)}")
+    end
+  end
+
+  desc "Detach application configuration from NGINX Unit"
+  task :detach_app do
+    on release_roles(fetch(:nginx_unit_roles)) do
+      control_nginx_unit(:delete, path: "/applications/#{fetch(:nginx_unit_app_name)}")
     end
   end
 
