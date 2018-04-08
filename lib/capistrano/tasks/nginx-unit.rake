@@ -22,8 +22,8 @@ namespace :nginx_unit do
       if test("[ -e #{pid_file} ] && kill -0 `cat #{pid_file}`")
         info "NGINX Unit is already started"
       else
-        execute :sudo, :unitd, 
-                "--pid #{pid_file}", 
+        execute :sudo, :unitd,
+                "--pid #{pid_file}",
                 "--control unix:#{fetch(:nginx_unit_control_sock)}",
                 fetch(:nginx_unit_options)
       end
@@ -43,8 +43,7 @@ namespace :nginx_unit do
   task :configure_listener do
     on release_roles(fetch(:nginx_unit_roles)) do
       listener_json = JSON.generate("application" => fetch(:application))
-
-      configure_nginx_unit("/listeners/#{fetch(:nginx_unit_listen)}", listener_json)
+      control_nginx_unit(:put, path: "/listeners/#{fetch(:nginx_unit_listen)}", json: listener_json)
     end
   end
 
@@ -62,27 +61,21 @@ namespace :nginx_unit do
         script:    File.join(released_dir, fetch(:nginx_unit_script))
       })
 
-      info "application config: #{app_json}"
-      configure_nginx_unit("/applications/#{fetch(:nginx_unit_app_name)}", app_json)
+      control_nginx_unit(:put, path: "/applications/#{fetch(:nginx_unit_app_name)}", json: app_json)
     end
   end
 
   # Send request to NGINX Unit control socket
-  def configure_nginx_unit(path, json)
-    info "#{path} => #{json}"
-
-    res = JSON.parse(capture(:curl,
-      "-X PUT",
-      "-d '#{json}'",
+  def control_nginx_unit(method, path: "", json: nil)
+    args = [
+      "-fs",
+      "-X #{method.to_s.upcase}",
       "--unix-socket #{fetch(:nginx_unit_control_sock)}",
       "'http://localhost/#{path}'"
-    ))
+    ]
 
-    if res["error"]
-      fatal res
-      raise "Faild to configure"
-    else
-      info res
-    end
+    args << "-d '#{json}'" if json
+
+    execute :curl, *args
   end
 end
