@@ -86,14 +86,26 @@ namespace :nginx_unit do
   desc "Detach listener configuration from NGINX Unit"
   task :detach_listener do
     on release_roles(fetch(:nginx_unit_roles)) do
-      control_nginx_unit(:delete, path: "/listeners/#{fetch(:nginx_unit_listen)}")
+      listen = fetch(:nginx_unit_listen)
+
+      if nginx_unit_conf["listeners"][listen]
+        control_nginx_unit(:delete, path: "/listeners/#{listen}")
+      else
+        info "Listener \"#{listen}\" is already detached"
+      end
     end
   end
 
   desc "Detach application configuration from NGINX Unit"
   task :detach_app do
     on release_roles(fetch(:nginx_unit_roles)) do
-      control_nginx_unit(:delete, path: "/applications/#{fetch(:nginx_unit_app_name)}")
+      app_name = fetch(:nginx_unit_app_name)
+
+      if nginx_unit_conf["applications"][app_name]
+        control_nginx_unit(:delete, path: "/applications/#{app_name}")
+      else
+        info "Application \"#{app_name}\" is already detached"
+      end
     end
   end
 
@@ -109,5 +121,14 @@ namespace :nginx_unit do
     args << "-d '#{json}'" if json
 
     execute :curl, *args
+  end
+
+  # Get current configuration
+  def nginx_unit_conf
+    JSON.parse(capture(
+      :curl,
+      "--unix-socket #{fetch(:nginx_unit_control_sock)}",
+      "http://localhost/"
+    ))
   end
 end
