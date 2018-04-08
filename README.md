@@ -18,9 +18,12 @@ require "capistrano/nginx-unit"
 Defined following tasks.
 
 ```
-cap nginx_unit:configure           # Set listener and application configuration for NGINX Unit
-cap nginx_unit:configure_app       # Set application configuration for NGINX Unit
-cap nginx_unit:configure_listener  # Set listener configuration for NGINX Unit
+cap nginx_unit:attach              # Attach listener and application configuration to NGINX Unit
+cap nginx_unit:attach_app          # Attach application configuration to NGINX Unit
+cap nginx_unit:attach_listener     # Attach listener configuration to NGINX Unit
+cap nginx_unit:detach              # Detach listener and application configuration from NGINX Unit
+cap nginx_unit:detach_app          # Detach application configuration from NGINX Unit
+cap nginx_unit:detach_listener     # Detach listener configuration from NGINX Unit
 cap nginx_unit:start               # Start NGINX Unit process
 ```
 
@@ -39,9 +42,9 @@ set :nginx_unit_group,        -> { nil }
 set :nginx_unit_script,       -> { "config.ru" }
 ```
 
-If you want to apply new code when deployed, please invoke `nginx_unit:configure` task after `deploy:published`.
+If you want to apply new code when deployed, please invoke `nginx_unit:attach` task after `deploy:published`.
 
 ```rb
 # deploy.rb
-after "deploy:published", "nginx_unit:configure"
+after "deploy:published", "nginx_unit:attach"
 ```
