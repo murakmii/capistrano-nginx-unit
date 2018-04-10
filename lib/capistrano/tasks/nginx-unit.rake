@@ -114,7 +114,7 @@ namespace :nginx_unit do
   # Send request to NGINX Unit control socket
   def control_nginx_unit(method, path: "", json: nil)
     args = [
-      "-fs",
+      "-s",
       "-X #{method.to_s.upcase}",
       "--unix-socket #{fetch(:nginx_unit_control_sock)}",
       "'http://localhost/#{path}'"
@@ -122,7 +122,13 @@ namespace :nginx_unit do
 
     args << "-d '#{json}'" if json
 
-    execute :curl, *args
+    res = JSON.parse(capture(:curl, *args))
+    if res["error"]
+      error res.inspect
+      raise "NGINX Unit: #{res["error"]}"
+    else
+      info res.inspect
+    end
   end
 
   # Get current configuration
