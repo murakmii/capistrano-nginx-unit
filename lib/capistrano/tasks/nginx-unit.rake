@@ -62,15 +62,15 @@ namespace :nginx_unit do
 
   desc "Attach application configuration to NGINX Unit"
   task :attach_app do
-    on release_roles(fetch(:nginx_unit_roles)) do |role|
+    on release_roles(fetch(:nginx_unit_roles)) do
       released_dir = capture(:readlink, "-f", current_path)
       raise "Doesn't exist released dir: #{released_dir}" unless test("[ -d #{released_dir} ]")
 
       app_json = JSON.generate({
         type: "ruby",
         processes: fetch(:nginx_unit_processes),
-        user: fetch(:nginx_unit_user) || role.user,
-        group: fetch(:nginx_unit_group) || role.user,
+        user: fetch(:nginx_unit_user) || host.user,
+        group: fetch(:nginx_unit_group) || host.user,
         working_directory: fetch(:nginx_unit_working_dir),
         script: File.join(released_dir, fetch(:nginx_unit_script))
       }.compact)
