@@ -49,5 +49,6 @@ set :nginx_unit_app_name,     -> { fetch(:application) }
 set :nginx_unit_processes,    -> { 1 }
 set :nginx_unit_user,         -> { nil }
 set :nginx_unit_group,        -> { nil }
+set :nginx_unit_working_dir,  -> { nil }
 set :nginx_unit_script,       -> { "config.ru" }
 ```
