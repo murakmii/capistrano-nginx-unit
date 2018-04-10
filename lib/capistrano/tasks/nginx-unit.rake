@@ -9,6 +9,7 @@ namespace :load do
     set :nginx_unit_processes,    -> { 1 }
     set :nginx_unit_user,         -> { nil }
     set :nginx_unit_group,        -> { nil }
+    set :nginx_unit_working_dir,  -> { nil }
     set :nginx_unit_script,       -> { "config.ru" }
   end
 end
@@ -66,12 +67,13 @@ namespace :nginx_unit do
       raise "Doesn't exist released dir: #{released_dir}" unless test("[ -d #{released_dir} ]")
 
       app_json = JSON.generate({
-        type:      "ruby",
+        type: "ruby",
         processes: fetch(:nginx_unit_processes),
-        user:      fetch(:nginx_unit_user) || role.user,
-        group:     fetch(:nginx_unit_group) || role.user,
-        script:    File.join(released_dir, fetch(:nginx_unit_script))
-      })
+        user: fetch(:nginx_unit_user) || role.user,
+        group: fetch(:nginx_unit_group) || role.user,
+        working_directory: fetch(:nginx_unit_working_dir),
+        script: File.join(released_dir, fetch(:nginx_unit_script))
+      }.compact)
 
       control_nginx_unit(:put, path: "/applications/#{fetch(:nginx_unit_app_name)}", json: app_json)
     end
