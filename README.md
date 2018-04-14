@@ -1,8 +1,9 @@
 # capistrano-nginx-unit
 
-## Instllation
+## Installation
 
 ```rb
+# Gemfile
 gem "capistrano-nginx-unit"
 ```
 
