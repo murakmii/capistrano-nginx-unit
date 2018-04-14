@@ -6,7 +6,7 @@ namespace :load do
     set :nginx_unit_options,      -> { "" }
     set :nginx_unit_listen,       -> { "*:3000" }
     set :nginx_unit_app_name,     -> { fetch(:application) }
-    set :nginx_unit_processes,    -> { 1 }
+    set :nginx_unit_processes,    -> { nil }
     set :nginx_unit_user,         -> { nil }
     set :nginx_unit_group,        -> { nil }
     set :nginx_unit_working_dir,  -> { nil }
@@ -69,8 +69,8 @@ namespace :nginx_unit do
       app_json = JSON.generate({
         type: "ruby",
         processes: fetch(:nginx_unit_processes),
-        user: fetch(:nginx_unit_user) || host.user,
-        group: fetch(:nginx_unit_group) || host.user,
+        user: fetch(:nginx_unit_user),
+        group: fetch(:nginx_unit_group),
         working_directory: fetch(:nginx_unit_working_dir) || released_dir,
         script: File.join(released_dir, fetch(:nginx_unit_script))
       }.compact)
