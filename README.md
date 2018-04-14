@@ -43,9 +43,7 @@ after "deploy:published", "nginx_unit:attach"
 
 ```rb
 set :nginx_unit_roles,        -> { :app }
-set :nginx_unit_pid,          -> { "/var/run/unit.pid" }
 set :nginx_unit_control_sock, -> { "/var/run/control.unit.sock" }
-set :nginx_unit_options,      -> { "" }
 set :nginx_unit_listen,       -> { "*:3000" }
 set :nginx_unit_app_name,     -> { fetch(:application) }
 set :nginx_unit_processes,    -> { nil }
@@ -59,17 +57,9 @@ set :nginx_unit_script,       -> { "config.ru" }
    
    Roles to run tasks for NGINX Unit. Default: `:app`
 
- - `:nginx_unit_pid`
-   
-   Path to NGINX Unit's pid file. Default: `"/var/run/unit.pid"`
-
  - `:nginx_unit_control_sock`
 
    Path to NGINX Unit's unix domain socket path. Default: `"/var/run/control.unit.sock"`
-
- - `:nginx_unit_options`
-
-   Additional options that is used when launch NGINX Unit by `nginx_unit:start`
 
  - `:nginx_unit_listen`
   

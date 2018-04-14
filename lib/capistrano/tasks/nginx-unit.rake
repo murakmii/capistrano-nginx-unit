@@ -1,9 +1,7 @@
 namespace :load do
   task :defaults do
     set :nginx_unit_roles,        -> { :app }
-    set :nginx_unit_pid,          -> { "/var/run/unit.pid" }
     set :nginx_unit_control_sock, -> { "/var/run/control.unit.sock" }
-    set :nginx_unit_options,      -> { "" }
     set :nginx_unit_listen,       -> { "*:3000" }
     set :nginx_unit_app_name,     -> { fetch(:application) }
     set :nginx_unit_processes,    -> { nil }
@@ -15,30 +13,16 @@ namespace :load do
 end
 
 namespace :nginx_unit do
-  desc "Start NGINX Unit process"
-  task :start do
-    on release_roles(fetch(:nginx_unit_roles)) do
-      pid_file = fetch(:nginx_unit_pid)
-      if test("[ -e #{pid_file} ] && kill -0 `cat #{pid_file}`")
-        info "NGINX Unit is already started"
-      else
-        execute :sudo, :unitd,
-                "--pid #{pid_file}",
-                "--control unix:#{fetch(:nginx_unit_control_sock)}",
-                fetch(:nginx_unit_options)
-      end
-    end
-  end
-
-  # NOTE: Should we detach listener and application before killing?
-  desc "Stop NGINX Unit process"
-  task :stop do
-    on release_roles(fetch(:nginx_unit_roles)) do
-      pid_file = fetch(:nginx_unit_pid)
-      if test("[ -e #{pid_file} ] && kill -0 `cat #{pid_file}`")
-        execute :sudo, :kill, "-s QUIT `cat #{pid_file}`"
-      else
-        info "NGINX Unit is already stopped"
+  # NOTE: Should we detach listener and application before stopping?
+  [:start, :stop].each do |cmd|
+    desc "#{cmd.to_s.capitalize} NGINX Unit process"
+    task cmd do
+      on release_roles(fetch(:nginx_unit_roles)) do
+        if test(:which, :systemctl)
+          sudo :systemctl, cmd, :unit
+        else
+          sudo :service, :unit, cmd
+        end
       end
     end
   end
