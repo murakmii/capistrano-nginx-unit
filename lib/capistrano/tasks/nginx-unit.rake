@@ -71,7 +71,7 @@ namespace :nginx_unit do
         processes: fetch(:nginx_unit_processes),
         user: fetch(:nginx_unit_user) || host.user,
         group: fetch(:nginx_unit_group) || host.user,
-        working_directory: fetch(:nginx_unit_working_dir),
+        working_directory: fetch(:nginx_unit_working_dir) || released_dir,
         script: File.join(released_dir, fetch(:nginx_unit_script))
       }.compact)
 
