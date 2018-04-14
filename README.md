@@ -1,6 +1,6 @@
 # capistrano-nginx-unit
 
-## Installation
+## Instllation
 
 ```rb
 gem "capistrano-nginx-unit"
@@ -30,6 +30,7 @@ cap nginx_unit:stop                # Stop NGINX Unit process
 
 `nginx_unit:attach` is main task.  
 The task [sends HTTP request to configure NGINX Unit](http://unit.nginx.org/configuration/) on server.  
+When NGINX Unit process received the request, launches rack application process.  
 If you want to apply new code when deployed, please invoke `nginx_unit:attach` task after `deploy:published`.
 
 ```rb
