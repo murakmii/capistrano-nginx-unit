@@ -106,7 +106,7 @@ namespace :nginx_unit do
 
     args << "-d '#{json}'" if json
 
-    res = JSON.parse(capture(:curl, *args))
+    res = JSON.parse(capture(:sudo, :curl, *args))
     if res["error"]
       error res.inspect
       raise "NGINX Unit: #{res["error"]}"
@@ -118,7 +118,7 @@ namespace :nginx_unit do
   # Get current configuration
   def nginx_unit_conf
     JSON.parse(capture(
-      :curl,
+      :sudo, :curl,
       "--unix-socket #{fetch(:nginx_unit_control_sock)}",
       "http://localhost/"
     ))
