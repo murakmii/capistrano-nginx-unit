@@ -57,7 +57,7 @@ namespace :nginx_unit do
         group: fetch(:nginx_unit_group),
         working_directory: fetch(:nginx_unit_working_dir) || released_dir,
         script: File.join(released_dir, fetch(:nginx_unit_script))
-      }.compact)
+      }.reject { |_, v| v.nil? })
 
       control_nginx_unit(:put, path: "/applications/#{fetch(:nginx_unit_app_name)}", json: app_json)
     end
