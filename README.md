@@ -51,6 +51,7 @@ set :nginx_unit_user,         -> { nil }
 set :nginx_unit_group,        -> { nil }
 set :nginx_unit_working_dir,  -> { nil }
 set :nginx_unit_script,       -> { "config.ru" }
+set :nginx_unit_environment,  -> { {} }
 ```
 
  - `:nginx_unit_roles`
@@ -91,4 +92,9 @@ set :nginx_unit_script,       -> { "config.ru" }
 
    Rack application script path. Default: `RELEASE_PATH/config.ru`  
    See [Ruby application configuration](https://unit.nginx.org/configuration/#ruby-application)
+
+ - `:nginx_unit_environment` (NGINX Unit >= 1.2)
+
+   Environment variable setting. Default value is empty.  
+   This variable accepts `Hash`. e.g., `{ "RAILS_ENV" => "production" }`.
    

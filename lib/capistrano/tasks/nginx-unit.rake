@@ -9,6 +9,7 @@ namespace :load do
     set :nginx_unit_group,        -> { nil }
     set :nginx_unit_working_dir,  -> { nil }
     set :nginx_unit_script,       -> { "config.ru" }
+    set :nginx_unit_environment,  -> { {} }
   end
 end
 
@@ -56,8 +57,9 @@ namespace :nginx_unit do
         user: fetch(:nginx_unit_user),
         group: fetch(:nginx_unit_group),
         working_directory: fetch(:nginx_unit_working_dir) || released_dir,
-        script: File.join(released_dir, fetch(:nginx_unit_script))
-      }.reject { |_, v| v.nil? })
+        script: File.join(released_dir, fetch(:nginx_unit_script)),
+        environment: fetch(:nginx_unit_environment)
+      }.reject { |_, v| v.respond_to?(:empty?) ? v.empty? : v.nil? })
 
       control_nginx_unit(:put, path: "/applications/#{fetch(:nginx_unit_app_name)}", json: app_json)
     end
