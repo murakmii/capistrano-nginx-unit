@@ -103,7 +103,7 @@ namespace :nginx_unit do
       "-s",
       "-X #{method.to_s.upcase}",
       "--unix-socket #{fetch(:nginx_unit_control_sock)}",
-      "'http://localhost/#{path}'"
+      "'http://localhost/config#{path}'"
     ]
 
     args << "-d '#{json}'" if json
@@ -122,7 +122,7 @@ namespace :nginx_unit do
     JSON.parse(capture(
       :sudo, :curl,
       "--unix-socket #{fetch(:nginx_unit_control_sock)}",
-      "http://localhost/"
+      "http://localhost/config"
     ))
   end
 end
