@@ -45,6 +45,7 @@ after "deploy:published", "nginx_unit:attach"
 set :nginx_unit_roles,        -> { :app }
 set :nginx_unit_control_sock, -> { "/var/run/control.unit.sock" }
 set :nginx_unit_listen,       -> { "*:3000" }
+set :nginx_unit_listener,     -> { { pass: "applications/#{fetch(:nginx_unit_app_name)}" } }
 set :nginx_unit_app_name,     -> { fetch(:application) }
 set :nginx_unit_processes,    -> { nil }
 set :nginx_unit_user,         -> { nil }
@@ -52,6 +53,7 @@ set :nginx_unit_group,        -> { nil }
 set :nginx_unit_working_dir,  -> { nil }
 set :nginx_unit_script,       -> { "config.ru" }
 set :nginx_unit_environment,  -> { {} }
+set :nginx_unit_limits,       -> { nil }
 ```
 
  - `:nginx_unit_roles`
@@ -67,6 +69,12 @@ set :nginx_unit_environment,  -> { {} }
    IP Address and port where rack application listens on. Default: `"*:3000"`    
    See [Listeners configuration](https://unit.nginx.org/configuration/#listeners)
 
+ - `:nginx_unit_listener`
+
+   Listener configuration of rack application processes. Default: `{ pass: "applications/#{fetch(:nginx_unit_app_name)}" }`  
+   If you are using Nginx UNIT that doesn\`t support `pass` option, you can overwrite this configuration with `{ application: fetch(:nginx_unit_app_name) }`  
+   (However, `application` option is currently deprecated.)
+
  - `:nginx_unit_app_name`
 
    Application name.  
@@ -75,10 +83,10 @@ set :nginx_unit_environment,  -> { {} }
  - `:nginx_unit_processes`
    
    Number of rack application processes. Default: `1`  
-   See [Application Object configuration](https://unit.nginx.org/configuration/#application-objects)
+   You can also set the `Hash` that has keys `max`, `spare` and `idle_timeout`.  
+   See [Processes and Limits](https://unit.nginx.org/configuration/#processes-and-limits)
 
- - `:nginx_unit_user`
- - `:nginx_unit_group`
+ - `:nginx_unit_user`, `:nginx_unit_group`
 
    Username and group of rack application process. Default: `"nobody"`  
    See [Application Object configuration](https://unit.nginx.org/configuration/#application-objects)
@@ -98,3 +106,8 @@ set :nginx_unit_environment,  -> { {} }
    Environment variable setting. Default value is empty.  
    This variable accepts `Hash`. e.g., `{ "RAILS_ENV" => "production" }`.
    
+ - `:nginx_unit_limits`
+   
+   Request limits of rack application processes. Default: `nil`(not specified)  
+   You can set the `Hash` that has keys `requests` and `timeout`.  
+   See [Processes and Limits](https://unit.nginx.org/configuration/#processes-and-limits)

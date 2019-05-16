@@ -6,3 +6,5 @@
 /pkg/
 /tmp/
 /vendor/
+
+Gemfile.lock
