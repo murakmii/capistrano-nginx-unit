@@ -1,3 +1,3 @@
 module Capistrano
-  NGINX_UNIT_VERSION = "0.8.0"
+  NGINX_UNIT_VERSION = "0.9.0"
 end
