@@ -72,7 +72,7 @@ set :nginx_unit_limits,       -> { nil }
  - `:nginx_unit_listener`
 
    Listener configuration of rack application processes. Default: `{ pass: "applications/#{fetch(:nginx_unit_app_name)}" }`  
-   If you are using Nginx UNIT that doesn\`t support `pass` option, you can overwrite this configuration with `{ application: fetch(:nginx_unit_app_name) }`  
+   If you are using NGINX Unit that doesn\`t support `pass` option, you can overwrite this configuration with `{ application: fetch(:nginx_unit_app_name) }`  
    (However, `application` option is currently deprecated.)  
    See [Listeners configuration](https://unit.nginx.org/configuration/#listeners)
 
