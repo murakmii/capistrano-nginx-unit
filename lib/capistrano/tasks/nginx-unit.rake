@@ -3,6 +3,7 @@ namespace :load do
     set :nginx_unit_roles,        -> { :app }
     set :nginx_unit_control_sock, -> { "/var/run/control.unit.sock" }
     set :nginx_unit_listen,       -> { "*:3000" }
+    set :nginx_unit_listener,     -> { { pass: "applications/#{fetch(:nginx_unit_app_name)}" } }
     set :nginx_unit_app_name,     -> { fetch(:application) }
     set :nginx_unit_processes,    -> { nil }
     set :nginx_unit_user,         -> { nil }
@@ -10,6 +11,7 @@ namespace :load do
     set :nginx_unit_working_dir,  -> { nil }
     set :nginx_unit_script,       -> { "config.ru" }
     set :nginx_unit_environment,  -> { {} }
+    set :nginx_unit_limits,       -> { nil }
   end
 end
 
@@ -40,7 +42,7 @@ namespace :nginx_unit do
   desc "Attach listener configuration to NGINX Unit"
   task :attach_listener do
     on release_roles(fetch(:nginx_unit_roles)) do
-      listener_json = JSON.generate("application" => fetch(:application))
+      listener_json = JSON.generate(fetch(:nginx_unit_listener))
       control_nginx_unit(:put, path: "/listeners/#{fetch(:nginx_unit_listen)}", json: listener_json)
     end
   end
@@ -58,7 +60,8 @@ namespace :nginx_unit do
         group: fetch(:nginx_unit_group),
         working_directory: fetch(:nginx_unit_working_dir) || released_dir,
         script: File.join(released_dir, fetch(:nginx_unit_script)),
-        environment: fetch(:nginx_unit_environment)
+        environment: fetch(:nginx_unit_environment),
+        limits: fetch(:nginx_unit_limits),
       }.reject { |_, v| v.respond_to?(:empty?) ? v.empty? : v.nil? })
 
       control_nginx_unit(:put, path: "/applications/#{fetch(:nginx_unit_app_name)}", json: app_json)
